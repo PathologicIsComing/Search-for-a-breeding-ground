@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Archive 18.04</title>
+
+<style>
+body{
+    margin:0;
+    background:#0a0a0a;
+    color:#b8c9a4;
+    font-family:Courier New, monospace;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    padding:20px;
+}
+
+#box{
+    width:100%;
+    max-width:700px;
+    border:1px solid #44503d;
+    padding:30px;
+    background:#111;
+    box-shadow:0 0 25px rgba(100,130,80,0.15);
+}
+
+h1{
+    font-size:22px;
+    margin-top:0;
+    color:#d4e6bf;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    margin-bottom:15px;
+    background:#0d0d0d;
+    color:#d4e6bf;
+    border:1px solid #44503d;
+    font-family:inherit;
+    font-size:16px;
+}
+
+button{
+    padding:10px 20px;
+    background:#1a1a1a;
+    color:#d4e6bf;
+    border:1px solid #44503d;
+    cursor:pointer;
+    font-family:inherit;
+}
+
+button:hover{
+    background:#202020;
+}
+
+#error{
+    color:#d66;
+    margin-top:10px;
+}
+
+#line{
+    white-space:pre-line;
+    line-height:1.6;
+    min-height:300px;
+}
+
+.blink{
+    animation:blink 1s infinite;
+}
+
+@keyframes blink{
+    50%{opacity:0;}
+}
+</style>
+</head>
+
+<body>
+
+<div id="box">
+<div id="login">
+
+<h1>ВНЕШНИЙ АРХИВ / ЗАПИСЬ 18.04</h1>
+
+<p>Доступ ограничен.<br>
+Введите ключ доступа.</p>
+
+<input type="text" id="pass" autocomplete="off">
+<button onclick="check()">ОТКРЫТЬ</button>
+
+<div id="error"></div>
+
+</div>
+
+<div id="content" style="display:none;">
+<h1>ЖУРНАЛ ВОССТАНОВЛЕН</h1>
+<div id="line"></div>
+</div>
+</div>
+
+<script>
+
+const password = "focus naturalis epizooticus";
+
+function check(){
+
+let p = document.getElementById("pass").value.trim().toLowerCase();
+
+if(p === password){
+
+document.getElementById("login").style.display="none";
+document.getElementById("content").style.display="block";
+
+typeText();
+
+}else{
+document.getElementById("error").innerText="Ошибка доступа.";
+}
+
+}
+
+const text = `
+[загрузка записи...]
+
+Если ты читаешь это —
+значит сумел понять больше, чем остальные.
+
+Я убеждён:
+источник заражения не в городе.
+
+Следы ведут в северный лесной сектор.
+
+Тебе необходимо пройти тем же путём,
+которым двигался первый носитель.
+
+Ищи знаки, оставленные заранее.
+
+Не доверяй очевидному.
+
+То, что выглядит заброшенным —
+может оказаться важнее нового.
+
+После завершения маршрута
+передай доказательства тому,
+кто направил тебя сюда.
+
+Последняя пометка:
+
+"Болезнь живёт там,
+где человек давно перестал смотреть."
+
+Конец записи.
+`;
+
+let i = 0;
+
+function typeText(){
+
+let target = document.getElementById("line");
+
+function add(){
+
+if(i < text.length){
+target.innerHTML += text.charAt(i);
+i++;
+setTimeout(add, 28);
+}else{
+target.innerHTML += '<span class="blink">█</span>';
+}
+
+}
+
+add();
+
+}
+
+</script>
+
+</body>
+</html>
