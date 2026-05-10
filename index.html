@@ -3,182 +3,270 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Archive 18.04</title>
+<title>Архив экспедиции</title>
 
 <style>
 body{
     margin:0;
+    padding:0;
     background:#0a0a0a;
-    color:#b8c9a4;
-    font-family:Courier New, monospace;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
-    padding:20px;
+    color:#d7d7d7;
+    font-family: "Courier New", monospace;
 }
 
-#box{
-    width:100%;
-    max-width:700px;
-    border:1px solid #44503d;
-    padding:30px;
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:40px 20px;
+}
+
+.panel{
     background:#111;
-    box-shadow:0 0 25px rgba(100,130,80,0.15);
+    border:1px solid #2b2b2b;
+    padding:25px;
+    box-shadow:0 0 20px rgba(0,255,120,0.08);
+    margin-bottom:25px;
 }
 
-h1{
-    font-size:22px;
+h1,h2{
+    color:#98ff98;
     margin-top:0;
-    color:#d4e6bf;
 }
 
 input{
     width:100%;
     padding:12px;
-    margin-top:15px;
-    margin-bottom:15px;
-    background:#0d0d0d;
-    color:#d4e6bf;
-    border:1px solid #44503d;
-    font-family:inherit;
+    background:#0f0f0f;
+    border:1px solid #333;
+    color:#fff;
+    margin-top:10px;
     font-size:16px;
 }
 
 button{
-    padding:10px 20px;
-    background:#1a1a1a;
-    color:#d4e6bf;
-    border:1px solid #44503d;
+    margin-top:12px;
+    padding:12px 18px;
+    background:#163d16;
+    color:#d8ffd8;
+    border:none;
     cursor:pointer;
-    font-family:inherit;
+    font-size:16px;
 }
 
 button:hover{
-    background:#202020;
+    background:#245f24;
 }
 
-#error{
-    color:#d66;
-    margin-top:10px;
+.hidden{
+    display:none;
 }
 
-#line{
+#output{
     white-space:pre-line;
     line-height:1.6;
-    min-height:300px;
+    min-height:200px;
 }
 
-.blink{
+.cursor::after{
+    content:"_";
     animation:blink 1s infinite;
 }
 
 @keyframes blink{
-    50%{opacity:0;}
+    0%,50%{opacity:1;}
+    51%,100%{opacity:0;}
+}
+
+.error{
+    color:#ff7070;
+    margin-top:10px;
+}
+
+.success{
+    color:#8cff8c;
+}
+
+hr{
+    border:0;
+    border-top:1px solid #222;
+    margin:25px 0;
 }
 </style>
 </head>
 
 <body>
 
-<div id="box">
-<div id="login">
+<div class="container">
 
-<h1>ВНЕШНИЙ АРХИВ / ЗАПИСЬ 18.04</h1>
+<div class="panel" id="loginPanel">
+<h1>Архив полевых записей</h1>
+<p>Введите ключ доступа.</p>
 
-<p>Доступ ограничен.<br>
-Введите ключ доступа.</p>
+<input type="password" id="mainPass" placeholder="Пароль">
+<button onclick="login()">Войти</button>
 
-<input type="text" id="pass" autocomplete="off">
-<button onclick="check()">ОТКРЫТЬ</button>
+<div id="loginError" class="error"></div>
+</div>
 
-<div id="error"></div>
+<div class="panel hidden" id="storyPanel">
+<h2 id="sectionTitle">Загрузка...</h2>
+
+<div id="output" class="cursor"></div>
+
+<hr>
+
+<div id="nextBlock">
+<input type="text" id="nextPass" placeholder="Введите следующий пароль">
+<button onclick="nextFragment()">Подтвердить</button>
+<div id="nextError" class="error"></div>
+</div>
 
 </div>
 
-<div id="content" style="display:none;">
-<h1>ЖУРНАЛ ВОССТАНОВЛЕН</h1>
-<div id="line"></div>
-</div>
 </div>
 
 <script>
+/* ---------- НАСТРОЙКИ ---------- */
 
-const password = "focus naturalis epizooticus";
+/* стартовый пароль входа */
+const startPassword = "ключ18";
 
-function check(){
+/* список фрагментов */
+const fragments = [
+{
+title:"Фрагмент 1 — Галерея",
+text:`[Здесь вставишь свой текст]
+Описание локации.
+Сюжет.
+Задание.`,
+password:"пароль1"
+},
 
-let p = document.getElementById("pass").value.trim().toLowerCase();
+{
+title:"Фрагмент 2 — Библиотека",
+text:`[Твой текст]
+Описание задачи с книгой.
+Шифр.
+Следующая цель.`,
+password:"пароль2"
+},
 
-if(p === password){
+{
+title:"Фрагмент 3 — Памятник",
+text:`[Твой текст]
+Найти объект.
+Получить дату.`,
+password:"пароль3"
+},
 
-document.getElementById("login").style.display="none";
-document.getElementById("content").style.display="block";
+{
+title:"Фрагмент 4 — Родник",
+text:`[Твой текст]
+Маршрут.
+Поиск растения.`,
+password:"пароль4"
+},
 
-typeText();
+{
+title:"Фрагмент 5 — Граффити",
+text:`[Твой текст]
+Найти рисунок.
+Ввести ассоциацию.`,
+password:"пароль5"
+},
 
-}else{
-document.getElementById("error").innerText="Ошибка доступа.";
+{
+title:"Фрагмент 6 — Лагерь / Корпус №1",
+text:`[Твой текст]
+Поиск конверта.`,
+password:"пароль6"
+},
+
+{
+title:"Фрагмент 7 — Лагерь / Корпус №2",
+text:`[Твой текст]
+Финальное испытание.`,
+password:"пароль7"
+},
+
+{
+title:"ФИНАЛ",
+text:`Ключ-подсказка получен.
+
+FOCUS NATURALIS EPIZOOTICUS
+
+Следующая дата дневника: 25.04`,
+password:null
 }
 
+];
+
+/* ---------- ЛОГИКА ---------- */
+
+let current = 0;
+
+function login(){
+    const val = document.getElementById("mainPass").value.trim().toLowerCase();
+
+    if(val === startPassword.toLowerCase()){
+        document.getElementById("loginPanel").classList.add("hidden");
+        document.getElementById("storyPanel").classList.remove("hidden");
+        loadFragment();
+    }else{
+        document.getElementById("loginError").innerText = "Неверный ключ.";
+    }
 }
 
-const text = `
-[загрузка записи...]
+function nextFragment(){
+    const expected = fragments[current].password;
 
-Если ты читаешь это —
-значит сумел понять больше, чем остальные.
+    if(expected === null) return;
 
-Я убеждён:
-источник заражения не в городе.
+    const val = document.getElementById("nextPass").value.trim().toLowerCase();
 
-Следы ведут в северный лесной сектор.
-
-Тебе необходимо пройти тем же путём,
-которым двигался первый носитель.
-
-Ищи знаки, оставленные заранее.
-
-Не доверяй очевидному.
-
-То, что выглядит заброшенным —
-может оказаться важнее нового.
-
-После завершения маршрута
-передай доказательства тому,
-кто направил тебя сюда.
-
-Последняя пометка:
-
-"Болезнь живёт там,
-где человек давно перестал смотреть."
-
-Конец записи.
-`;
-
-let i = 0;
-
-function typeText(){
-
-let target = document.getElementById("line");
-
-function add(){
-
-if(i < text.length){
-target.innerHTML += text.charAt(i);
-i++;
-setTimeout(add, 28);
-}else{
-target.innerHTML += '<span class="blink">█</span>';
+    if(val === expected.toLowerCase()){
+        current++;
+        document.getElementById("nextPass").value = "";
+        document.getElementById("nextError").innerText = "";
+        loadFragment();
+    }else{
+        document.getElementById("nextError").innerText = "Ошибка ввода.";
+    }
 }
 
+function loadFragment(){
+    const frag = fragments[current];
+
+    document.getElementById("sectionTitle").innerText = frag.title;
+
+    typeText(frag.text, document.getElementById("output"));
+
+    if(frag.password === null){
+        document.getElementById("nextBlock").classList.add("hidden");
+    }else{
+        document.getElementById("nextBlock").classList.remove("hidden");
+    }
 }
 
-add();
+function typeText(text, element){
+    element.innerHTML = "";
+    element.classList.add("cursor");
 
+    let i = 0;
+
+    const speed = 18;
+
+    const timer = setInterval(()=>{
+        element.innerHTML += text.charAt(i);
+        i++;
+
+        if(i >= text.length){
+            clearInterval(timer);
+            element.classList.remove("cursor");
+        }
+
+    }, speed);
 }
-
 </script>
 
 </body>
